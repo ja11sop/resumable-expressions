@@ -10,22 +10,20 @@ class rexp( cuppa.header_library_dependency( 'rexp' ) ):
             '#include'
         ] )
 
-        def build_static_lib( env ):
-            object_file = env.Compile('#src/rexp/waiter.cpp')
-            return [
-                env.BuildStaticLib( 'rexp', object_file ),
-                env.BoostStaticLibs( ['coroutine'] )
-            ]
+        class build_lib(object):
 
-        def build_shared_lib( env ):
-            object_file = env.Compile('#src/rexp/waiter.cpp')
-            return [
-                env.BuildSharedLib( 'rexp', object_file ),
-                env.BoostSharedLibs( ['coroutine'] )
-            ]
+            def __init__( self, linktype ):
+                self._linktype = linktype
 
-        env.AddMethod( build_static_lib, "StaticRexpLib" )
-        env.AddMethod( build_shared_lib, "SharedRexpLib" )
+            def __call__( self, env ):
+                object_file = env.Compile('#src/rexp/waiter.cpp')
+                return [
+                    getattr( env, "Build" + self._linktype + "Lib" )( 'rexp', object_file ),
+                    getattr( env, "Boost" + self._linktype + "Libs" )( ['coroutine'] )
+                ]
+
+        env.AddMethod( build_lib( "Static" ), "StaticRexpLib" )
+        env.AddMethod( build_lib( "Shared" ), "SharedRexpLib" )
 
 
 cuppa.run(
