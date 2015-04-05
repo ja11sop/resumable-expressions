@@ -1,12 +1,40 @@
 import cuppa
 
-def defaults( env, toolchain, variant ):
-    env.AppendUnique( INCPATH = '#/include' )
+
+class rexp( cuppa.header_library_dependency( 'rexp' ) ):
+
+    def __call__( self, env, toolchain, variant ):
+        super(rexp,self).__call__( env, toolchain, variant )
+
+        env.AppendUnique( INCPATH = [
+            '#include'
+        ] )
+
+        def build_static_lib( env ):
+            object_file = env.Compile('#src/rexp/waiter.cpp')
+            return [
+                env.BuildStaticLib( 'rexp', object_file ),
+                env.BoostStaticLibs( ['coroutine'] )
+            ]
+
+        def build_shared_lib( env ):
+            object_file = env.Compile('#src/rexp/waiter.cpp')
+            return [
+                env.BuildSharedLib( 'rexp', object_file ),
+                env.BoostSharedLibs( ['coroutine'] )
+            ]
+
+        env.AddMethod( build_static_lib, "StaticRexpLib" )
+        env.AddMethod( build_static_lib, "SharedRexpLib" )
+
 
 cuppa.run(
     default_options = {
-        'boost-version': "latest"
+        'boost-version': "latest",
+        'rexp-location': "."
     },
-    default_dependencies = [ 'boost' ],
-    default_profiles = [ defaults ]
+    dependencies = {
+        'rexp': rexp
+    },
+    default_dependencies = [ 'boost', 'rexp' ],
 )

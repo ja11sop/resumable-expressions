@@ -1,0 +1,27 @@
+Import('env')
+
+env.AppendUnique( STATICLIBS = env.StaticRexpLib() )
+
+server_examples = {
+
+    "await3"     : 'await3.cpp',
+    "await4"     : 'await4.cpp',
+}
+
+test_examples = {
+    "await1"     : 'await1.cpp',
+    "await2"     : 'await2.cpp',
+    "generator1" : 'generator1.cpp',
+    "generator2" : 'generator2.cpp',
+    "generator3" : 'generator3.cpp',
+    "generator4" : 'generator4.cpp',
+    "generator5" : 'generator5.cpp',
+    "printer"    : 'printer.cpp'
+
+}
+
+for example, sources in server_examples.iteritems():
+    env.Build( example, Split( sources ) )
+
+for example, sources in test_examples.iteritems():
+    env.BuildTest( example, Split( sources ) )
