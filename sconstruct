@@ -25,7 +25,7 @@ class rexp( cuppa.header_library_dependency( 'rexp' ) ):
             ]
 
         env.AddMethod( build_static_lib, "StaticRexpLib" )
-        env.AddMethod( build_static_lib, "SharedRexpLib" )
+        env.AddMethod( build_shared_lib, "SharedRexpLib" )
 
 
 cuppa.run(
